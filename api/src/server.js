@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cors());
 
 app.get('/', (request, response) => {
-    return response.json({ status: "Running", port: 3030 });
+  return response.json({ status: "Running", port: 3030 });
 });
 
 app.listen('3030');
