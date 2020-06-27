@@ -13,5 +13,6 @@ router.get('/', (request, response) => {
  * User requests
  */
 router.get('/register', User.register);
+router.post('/signin', User.signin);
 
 module.exports = router;
