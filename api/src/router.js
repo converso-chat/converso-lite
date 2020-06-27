@@ -2,8 +2,9 @@ express = require('express');
 
 router = express.Router();
 
+const authMiddleware = require('./middlewares/auth');
+
 const User = require('./controllers/UserController');
-// const User = new UserController();
 
 router.get('/', (request, response) => {
   return response.json({ status: "Running", port: 3030 });
@@ -14,5 +15,6 @@ router.get('/', (request, response) => {
  */
 router.get('/register', User.register);
 router.post('/signin', User.signin);
+router.get('/profile', authMiddleware, User.show);
 
 module.exports = router;

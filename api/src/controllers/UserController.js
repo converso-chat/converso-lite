@@ -8,6 +8,24 @@ const { secret } = require('../configs/credentials/auth.json');
 const model = require('../configs/database/database');
 
 class UserController {
+  /**
+   * Show user profile
+   * @param {*} request 
+   * @param {*} response 
+   * @return {json}
+   */
+  async show(request, response) {
+    const user = (await model.collection("users").doc(request.user_id).get()).data();
+    user.password = undefined;
+    return response.json(user);
+  }
+
+  /**
+   * Register an user
+   * @param {*} request 
+   * @param {*} response 
+   * @return {json}
+   */
   async register(request, response) {
     let { name, email, password, phone, segmentation } = request.body;
 
@@ -36,9 +54,14 @@ class UserController {
       return response.json({ success: false, message: "Internal Error" });
 
     return response.json({ success: true, id: add.id });
-
   }
 
+  /**
+   * User authentication with JWT
+   * @param {*} request 
+   * @param {*} response 
+   * @return {json}
+   */
   async signin(request, response) {
     let { email, password } = request.body;
 
@@ -65,7 +88,6 @@ class UserController {
     user.password = undefined;
 
     return response.json({ success: true, user, token });
-
   }
 }
 
