@@ -52,12 +52,13 @@ class UserController {
 
     user.forEach(doc => {
       user = doc.data();
+      user.id = doc.id;
     });
 
     if (!bcrypt.compareSync(password, user.password))
       return response.json({ success: false, message: "Incorrect password" });
 
-    const token = jwt.sign({ id: user._id }, secret, {
+    const token = jwt.sign({ id: user.id }, secret, {
       expiresIn: 86400 * 7
     });
 
