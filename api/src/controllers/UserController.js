@@ -1,18 +1,20 @@
 /** @module UserController */
 
-const bcrypt = require('bcryptjs');
-const moment = require('moment');
 const jwt = require('jsonwebtoken');
 const { secret } = require('../configs/credentials/auth.json');
 
-const model = require('../configs/database/database');
+const model = require('../configs/database/connection');
+
+const BcryptHelper = require('../services/bcrypt/BcryptHelper');
+const MomentHelper = require('../services/moment/MomentHelper');
+const UserVerifications = require('../services/user/UserVerifications');
 
 class UserController {
   /**
    * Show user profile
    * @param {*} request 
    * @param {*} response 
-   * @return {json}
+   * @return {JSON}
    */
   async show(request, response) {
     const user = (await model.collection("users").doc(request.user_id).get()).data();
@@ -24,7 +26,7 @@ class UserController {
    * Register an user
    * @param {*} request 
    * @param {*} response 
-   * @return {json}
+   * @return {JSON}
    */
   async register(request, response) {
     let { name, email, password, phone, segmentation } = request.body;
@@ -36,8 +38,8 @@ class UserController {
     if (exists)
       return response.json({ success: false, message: "User already exists" });
 
-    password = bcrypt.hashSync(password, 10);
-    const expiration_date = moment().add(1, 'month');
+    password = BcryptHelper.generate(password);
+    const expiration_date = MomentHelper.generate_date(1, 'month');
 
     const add = await model.collection('users').add({
       name,
@@ -60,25 +62,27 @@ class UserController {
    * User authentication with JWT
    * @param {*} request 
    * @param {*} response 
-   * @return {json}
+   * @return {JSON}
    */
   async signin(request, response) {
     let { email, password } = request.body;
 
     if (!email || !password)
       return response.json({ success: false, message: "Empty data" });
-    
-    let user = await model.collection('users').where("email", "==", email).get();
 
-    if (user.empty)
+    let user = await UserVerifications.exists(email);
+
+    if (!user.response)
       return response.json({ success: false, message: "User does not exists" });
 
+    user = user.data;
+    
     user.forEach(doc => {
       user = doc.data();
       user.id = doc.id;
     });
 
-    if (!bcrypt.compareSync(password, user.password))
+    if (!BcryptHelper.compare(password, user.password))
       return response.json({ success: false, message: "Incorrect password" });
 
     const token = jwt.sign({ id: user.id }, secret, {
