@@ -15,7 +15,8 @@
     "express": "^4.17.1",
     "firebase-admin": "^8.12.1",
     "jsonwebtoken": "^8.5.1",
-    "moment": "^2.27.0"
+    "moment": "^2.27.0",
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "morgan": "^1.10.0",
