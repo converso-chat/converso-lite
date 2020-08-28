@@ -58,8 +58,7 @@ class HandleMessage {
 
     await HandleChat.add(destination);
 
-    await this.add('5513996096926', message, type, '', 'me');
-
+    await this.add(destination, message, type, '', 'me');
   }
 }
 

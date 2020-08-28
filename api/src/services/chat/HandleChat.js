@@ -1,6 +1,7 @@
 /** @module HandleChat */
 
 const model = require('../../configs/database/connection');
+const locale = require('../user/locale.json');
 
 const ModelHelper = require('../helpers/ModelHelpers');
 const ChatVerifications = require('./ChatVerifications');
@@ -13,7 +14,7 @@ class HandleChat {
    * @return {JSON}
    */
   async get(contact_id) {
-    let chat = await model.collection('chat').where('contact_id', '==', contact_id).get();
+    let chat = await model.collection('chat').where('contact_id', '==', contact_id).where('user_id', '==', locale.user_id).get();
 
     if (!chat.empty) {
       chat = ModelHelper.each_data(chat);
@@ -34,6 +35,7 @@ class HandleChat {
       return { success: false, message: "Chat with this contact already exists" };
 
     const add = await model.collection('chat').add({
+      user_id: locale.user_id,
       contact_id,
       bot_is_active: true,
       messages: []
