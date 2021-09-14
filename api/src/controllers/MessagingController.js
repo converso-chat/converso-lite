@@ -1,10 +1,14 @@
 /** @module MessagingController */
 
 const HandleMessage = require('../services/chat/HandleMessage');
+const locale = require('../services/user/locale.json');
 
 class MessagingController {
   async create(request, response) {
+    const user_id = request.user_id;
     const { message, type, destination } = request.body;
+
+    locale.user_id = user_id;
 
     HandleMessage.send(message, type, destination);
     

@@ -21,6 +21,6 @@ router.get('/profile', authMiddleware, User.show);
 /**
  * Messaging requests
  */
-router.post('/chat/message', Messaging.create);
+router.post('/chat/message', authMiddleware, Messaging.create);
 
 module.exports = router;
